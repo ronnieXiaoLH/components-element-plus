@@ -1,6 +1,6 @@
 <template>
   <div>
-    <m-form :options="options" label-width="100px">
+    <m-form ref="form" :options="options" label-width="100px">
       <template #uploadArea>
         <el-button type="primary">Click to upload</el-button>
       </template>
@@ -8,6 +8,10 @@
         <div class="el-upload__tip">
           jpg/png files with a size less than 500KB.
         </div>
+      </template>
+      <template #action="scope">
+        <el-button type="primary" @click="onSubmit(scope)">提交</el-button>
+        <el-button @click="resetForm(scope)">重置</el-button>
       </template>
     </m-form>
   </div>
@@ -148,18 +152,45 @@ const options: FormOptions[] = [
     type: 'upload',
     label: '上传',
     prop: 'picture',
-    rules: [
-      {
-        required: true,
-        message: '职位不能为空',
-        trigger: 'blur',
-      },
-    ],
+    // rules: [
+    //   {
+    //     required: true,
+    //     message: '图片不能为空',
+    //     trigger: 'blur',
+    //   },
+    // ],
     uploadAttrs: {
       action: 'https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15',
     },
   },
+  {
+    type: 'editor',
+    value: '123',
+    prop: 'desc',
+    label: '描述',
+    placeholder: '请输入描述',
+    rules: [
+      {
+        required: true,
+        message: '描述不能为空',
+        trigger: 'blur',
+      },
+    ],
+  },
 ]
+
+const form = ref()
+
+const onSubmit = (scope: any) => {
+  console.log(scope)
+  scope.form.validate((valid: boolean) => {
+    console.log(valid)
+  })
+}
+
+const resetForm = () => {
+  form.value.resetFields()
+}
 </script>
 <style  lang='scss' scoped>
 ::v-deep .el-upload {
