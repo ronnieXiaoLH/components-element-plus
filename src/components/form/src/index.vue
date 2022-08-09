@@ -38,8 +38,6 @@
         </el-upload>
         <div id="editor" v-if="item.type === 'editor'"></div>
       </el-form-item>
-    </template>
-    <template v-for="(item, index) in options" :key="item.prop + index">
       <el-form-item
         v-if="item.children?.length"
         :label="item.label"
@@ -134,6 +132,9 @@ const initForm = () => {
   })
   model.value = cloneDeep(m)
   rules.value = cloneDeep(r)
+  nextTick(() => {
+    resetFields()
+  })
 }
 
 // 自定义表单重置方法
@@ -151,9 +152,15 @@ const resetFields = () => {
   }
 }
 
+const validate = () => form.value?.validate
+
+const getFormData = () => model.value
+
 // 分发方法
 defineExpose({
   resetFields,
+  validate,
+  getFormData,
 })
 
 onMounted(() => {
@@ -185,7 +192,6 @@ const onSuccess = (
   uploadFile: UploadFile,
   uploadFiles: UploadFiles
 ) => {
-  console.log(response, uploadFile, uploadFiles)
   const uploadItem = props.options.find((item) => item.type === 'upload')
   model.value[uploadItem?.prop!] = {
     response,
@@ -224,7 +230,6 @@ const onProgress = (
 }
 
 const onChange = (uploadFile: UploadFile, uploadFiles: UploadFiles) => {
-  console.log(uploadFile)
   emits('on-change', { uploadFile, uploadFiles })
 }
 
@@ -241,4 +246,7 @@ const beforeRemove = (uploadFile: UploadFile, uploadFiles: UploadFiles) => {
 }
 </script>
 <style  lang='scss' scoped>
+::v-deep .el-upload {
+  display: block;
+}
 </style>

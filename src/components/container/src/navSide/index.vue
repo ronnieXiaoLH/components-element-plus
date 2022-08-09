@@ -73,6 +73,11 @@ const data = [
     index: '/form',
   },
   {
+    icon: 'Tickets',
+    name: '弹出框表单',
+    index: '/modalForm',
+  },
+  {
     icon: 'Grid',
     name: '表格',
     index: '/table',
