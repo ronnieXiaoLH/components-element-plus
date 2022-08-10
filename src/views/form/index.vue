@@ -193,7 +193,7 @@ const resetForm = () => {
 }
 </script>
 <style  lang='scss' scoped>
-::v-deep .el-upload {
+:deep(.el-upload) {
   display: block;
 }
 </style>
