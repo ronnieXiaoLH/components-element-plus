@@ -13,6 +13,10 @@
           >Delete</el-button
         >
       </template>
+      <!-- <template #editCell>
+        <el-button size="small">确定</el-button>
+        <el-button size="small">取消</el-button>
+      </template> -->
     </m-table>
   </div>
 </template>
@@ -58,6 +62,7 @@ const options: TableOptions[] = [
     label: '地址',
     prop: 'address',
     align: 'center',
+    editable: true,
   },
   {
     label: '操作',

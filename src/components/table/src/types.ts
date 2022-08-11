@@ -7,4 +7,6 @@ export interface TableOptions {
   slotName?: string
   // 是否是操作列
   action?: boolean
+  // 是否可编辑
+  editable?: boolean
 }
