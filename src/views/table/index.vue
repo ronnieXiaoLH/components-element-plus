@@ -1,6 +1,11 @@
 <template>
   <div>
-    <m-table :options="options" :data="tableData">
+    <m-table
+      :options="options"
+      :data="tableData"
+      :isEditRow="true"
+      :canEditFlag="canEditFlag"
+    >
       <template #date="{ scope }">
         <el-icon-timer></el-icon-timer>
         {{ scope.row.date }}
@@ -13,6 +18,14 @@
           >Delete</el-button
         >
       </template>
+      <template #editAction="{ scope }">
+        <el-button type="primary" size="small" @click="handleSave(scope)"
+          >保存</el-button
+        >
+        <el-button type="primary" size="small" @click="handleCancel(scope)"
+          >取消</el-button
+        >
+      </template>
       <!-- <template #editCell>
         <el-button size="small">确定</el-button>
         <el-button size="small">取消</el-button>
@@ -21,6 +34,7 @@
   </div>
 </template>
 <script lang='ts' setup>
+import { ref } from '@vue/reactivity'
 import { TableOptions } from '../../components/table/src/types'
 
 const tableData = [
@@ -73,10 +87,22 @@ const options: TableOptions[] = [
 
 const handleEdit = (scope: any) => {
   console.log('edit', scope)
+  canEditFlag.value = false
 }
 
 const handleDelete = (scope: any) => {
   console.log('delete', scope)
+  canEditFlag.value = true
+}
+
+const canEditFlag = ref<boolean>(false)
+
+const handleSave = (scope: any) => {
+  console.log(scope)
+}
+
+const handleCancel = (scope: any) => {
+  console.log(scope)
 }
 </script>
 <style  lang='scss' scoped>
