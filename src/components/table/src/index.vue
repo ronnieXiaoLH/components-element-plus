@@ -1,5 +1,5 @@
 <template>
-  <el-table :data="tableData" @row-click="rowClick">
+  <el-table :data="tableData" v-bind="$attrs" @row-click="rowClick">
     <template v-for="(item, index) in tableOptions" :key="item.prop + index">
       <el-table-column
         :label="item.label"
