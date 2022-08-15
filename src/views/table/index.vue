@@ -4,7 +4,13 @@
       :options="options"
       :data="tableData"
       :isEditRow="true"
-      :canEditFlag="canEditFlag"
+      v-model:canEditFlag="canEditFlag"
+      pagination
+      v-model:current="current"
+      v-model:pageSize="pageSize"
+      :total="total"
+      @currentChange="currentChange"
+      @sizeChange="sizeChange"
     >
       <template #date="{ scope }">
         <el-icon-timer></el-icon-timer>
@@ -34,31 +40,11 @@
   </div>
 </template>
 <script lang='ts' setup>
-import { ref } from '@vue/reactivity'
+import { onMounted, ref } from 'vue'
+import axios from 'axios'
 import { TableOptions } from '../../components/table/src/types'
 
-const tableData = [
-  {
-    date: '2016-05-03',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    date: '2016-05-02',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    date: '2016-05-04',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    date: '2016-05-01',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-]
+const tableData = ref([])
 
 const options: TableOptions[] = [
   {
@@ -85,9 +71,30 @@ const options: TableOptions[] = [
   },
 ]
 
+const current = ref<number>(1)
+const pageSize = ref<number>(10)
+const total = ref<number>(0)
+
+onMounted(() => {
+  getTableData()
+})
+
+const getTableData = () => {
+  axios
+    .post('/api/list', {
+      current: current.value,
+      pageSize: pageSize.value,
+    })
+    .then((res) => {
+      const data = res.data
+      console.log(data)
+      tableData.value = data.data?.rows
+      total.value = data.data.total
+    })
+}
+
 const handleEdit = (scope: any) => {
   console.log('edit', scope)
-  canEditFlag.value = false
 }
 
 const handleDelete = (scope: any) => {
@@ -99,10 +106,22 @@ const canEditFlag = ref<boolean>(false)
 
 const handleSave = (scope: any) => {
   console.log(scope)
+  canEditFlag.value = false
 }
 
 const handleCancel = (scope: any) => {
   console.log(scope)
+  canEditFlag.value = false
+}
+
+const currentChange = (val: number) => {
+  current.value = val
+  getTableData()
+}
+
+const sizeChange = (val: number) => {
+  pageSize.value = val
+  getTableData()
 }
 </script>
 <style  lang='scss' scoped>

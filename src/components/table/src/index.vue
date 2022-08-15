@@ -65,6 +65,22 @@
       </template>
     </el-table-column>
   </el-table>
+  <div
+    class="pagination-container"
+    v-if="pagination"
+    :style="{ 'justify-content': paginationAlignJustify }"
+  >
+    <el-pagination
+      v-model:currentPage="current"
+      :page-size="pageSize"
+      :page-sizes="pageSizes"
+      :small="small"
+      layout="total, prev, pager, next, sizes"
+      :total="total"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+    />
+  </div>
 </template>
 <script lang="ts">
 import { computed, defineComponent, onMounted, PropType, ref, watch } from 'vue'
@@ -101,6 +117,31 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  // 分页相关属性
+  pagination: {
+    type: Boolean,
+    default: false,
+  },
+  current: {
+    type: Number,
+    default: 1,
+  },
+  pageSize: {
+    type: Number,
+    default: 10,
+  },
+  pageSizes: {
+    type: Array as PropType<Number[]>,
+    default: () => [10, 20, 30, 40],
+  },
+  total: {
+    type: Number,
+  },
+  // 分页器的排列方式
+  paginationAlign: {
+    type: String as PropType<'left' | 'center' | 'right'>,
+    default: 'right',
+  },
 })
 
 const tableOptions = computed(() =>
@@ -115,7 +156,13 @@ const edit = (scope: any) => {
   currentEditColumn.value = scope.$index + scope.column.id
 }
 
-const emits = defineEmits(['submitEdit', 'cancelEdit'])
+const emits = defineEmits([
+  'submitEdit',
+  'cancelEdit',
+  'update:canEditFlag',
+  'currentChange',
+  'sizeChange',
+])
 
 // 利用冒泡，实现自定义 editCell 插槽初始化状态
 const editCell = () => {
@@ -160,7 +207,31 @@ const rowClick = (row: any, column: any) => {
   ) {
     addEditFlag()
     row.rowEdit = true
+    emits('update:canEditFlag', false)
+  } else {
+    row.rowEdit = false
   }
+}
+
+const paginationAlignJustify = computed(() => {
+  switch (props.paginationAlign) {
+    case 'left':
+      return 'flex-satrt'
+    case 'center':
+      return 'center'
+    case 'right':
+      return 'flex-end'
+    default:
+      'flex-end'
+  }
+})
+
+const handleSizeChange = (val: number) => {
+  emits('sizeChange', val)
+}
+
+const handleCurrentChange = (val: number) => {
+  emits('currentChange', val)
 }
 </script>
 <style  lang='scss' scoped>
@@ -185,5 +256,11 @@ const rowClick = (row: any, column: any) => {
   .close {
     color: green;
   }
+}
+
+.pagination-container {
+  display: flex;
+  align-items: center;
+  margin-top: 16px;
 }
 </style>
