@@ -35,13 +35,38 @@ const buildAll = async () => {
       rollupOptions,
       lib: {
         entry: path.resolve(entryDir, 'index.ts'),
-        name: 'm-element-plus-components',
-        fileName: 'm-element-plus-components',
+        name: 'index',
+        fileName: 'index',
         formats: ['es', 'umd'],
       },
       outDir,
     },
   })
+  createIndexDTs()
+  createRootPackageJson()
+}
+
+// 生成 package.json 文件
+const createRootPackageJson = () => {
+  const fileStr = `{
+  "name": "xlh-element-plus-components",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "module": "index.umd.cjs",
+  "types": "index.d.ts",
+  "keywords": [
+    "element-plus",
+    "ts",
+    "组件封装",
+    "二次封装"
+  ],
+  "author": "xiaolonghao",
+  "license": "ISC"
+}
+`
+  // 输出
+  fse.outputFile(path.resolve(outDir, 'package.json'), fileStr, 'utf-8')
 }
 
 // 单组件打包
@@ -65,13 +90,33 @@ const buildSingle = async (name) => {
 const createPackageJson = (name) => {
   const fileStr = `{
   "name": "${name}",
-  "main": "index.umd.js",
-  "module": "index.ed.js",
+  "main": "index.js",
+  "module": "index.umd.cjs",
   "style": "styles.css"
 }
 `
   // 输出
   fse.outputFile(path.resolve(outDir, `${name}/package.json`), fileStr, 'utf-8')
+}
+
+// 生成 index.d.ts 文件
+const createIndexDTs = (name) => {
+  const fileStr = `
+import { App } from 'vue'
+
+declare const _default: {
+  install(app: App): void
+}
+
+export default _default
+`
+
+  // 输出
+  fse.outputFile(
+    path.resolve(outDir, name ? `${name}/index.d.ts` : 'index.d.ts'),
+    fileStr,
+    'utf-8'
+  )
 }
 
 const buildLib = async () => {
@@ -92,6 +137,7 @@ const buildLib = async () => {
   for (const name of components) {
     await buildSingle(name)
     createPackageJson(name)
+    createIndexDTs(name)
   }
 }
 
